@@ -1,4 +1,12 @@
 {
+  "name": "video-to-gif",
+  "author": {
+    "name": "mxr",
+    "url": "https://mxrr.dev"
+  },
+  "description": "Convert videos to gifs using the wasm port of ffmpeg",
+  "license": "MIT",
+
   "scripts": {
     "start": "snowpack dev",
     "build": "snowpack build",
@@ -8,6 +16,8 @@
     "svelte": "^3.24.0"
   },
   "devDependencies": {
+    "@ffmpeg/core": "^0.8.5",
+    "@ffmpeg/ffmpeg": "^0.9.7",
     "@snowpack/plugin-dotenv": "^2.0.5",
     "@snowpack/plugin-svelte": "^3.5.0",
     "@snowpack/plugin-typescript": "^1.2.0",
