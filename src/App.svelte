@@ -42,6 +42,10 @@
 		gifFile = '';
 	}
 
+	async function clearVideo() {
+		videoFile = null;
+	}
+
 </script>
   
 <style type="text/scss">
@@ -68,14 +72,15 @@
 		>
 
 		{#if videoFile}
+			<button on:click={clearVideo}>Clear Video</button>
 			<video src={URL.createObjectURL(videoFile)} controls={true} />
-		{/if}
 
-		<button on:click={convertToGif}>Convert to GIF</button>
-		<button on:click={clearGif}>Clear GIF</button>
-
-		{#if gifFile !== ''}
-			<img src={gifFile} alt="converted gif" />
+			
+			<button on:click={convertToGif}>Convert to GIF</button>
+			{#if gifFile !== ''}
+				<button on:click={clearGif}>Clear GIF</button>
+				<img src={gifFile} alt="converted gif" />
+			{/if}
 		{/if}
 	{/if}
 </div>
