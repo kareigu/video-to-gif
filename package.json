@@ -6,7 +6,6 @@
   },
   "description": "Convert videos to gifs using the wasm port of ffmpeg",
   "license": "MIT",
-
   "scripts": {
     "start": "snowpack dev",
     "build": "snowpack build",
@@ -30,6 +29,7 @@
     "chai": "^4.2.0",
     "node-sass": "^5.0.0",
     "snowpack": "^3.0.1",
+    "svelte-materialify": "^0.3.4",
     "svelte-preprocess": "^4.0.8",
     "typescript": "^4.0.0"
   }

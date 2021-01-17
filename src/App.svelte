@@ -1,6 +1,15 @@
 <script lang='ts'>
+	import { MaterialApp, Button, AppBar } from 'svelte-materialify';
 	import { onMount } from 'svelte';
+	import { slide, fade } from 'svelte/transition'
 	import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
+
+	let theme: 'dark' | 'light' = 'dark';
+
+	function toggleTheme() {
+		theme = theme === 'dark' ? 'light' : 'dark';
+		document.body.setAttribute('class', `theme--${theme}`);
+	}
 
 	const VIDEO = 'video.mp4'
 	const GIF = 'out.gif'
@@ -10,6 +19,7 @@
 	let ffmpegReady = false;
 	let gifFile: string = '';
 
+
 	async function loadFFMPEG() {
 		await ffmpeg.load();
 		ffmpegReady = true;
@@ -17,7 +27,13 @@
 
 	onMount(() => {
 		loadFFMPEG();
+
+		return () => {
+			clearVideo();
+		}
 	});
+
+
 
 	function handleLoadingVideo(e: Event) {
 		if(e.target) {
@@ -43,45 +59,65 @@
 	}
 
 	async function clearVideo() {
+		document.getElementById('hiddenFileInput')!.value = null;
+		if(gifFile !== '') {
+			ffmpeg.FS('unlink', GIF);
+			gifFile = '';
+		}
 		videoFile = null;
 	}
 
 </script>
   
 <style type="text/scss">
-:global(body) {
-	margin: 0;
-	font-family: Arial, Helvetica, sans-serif;
-}
 
-.App {
-	text-align: center;
-}
+	.pageContent {
+		margin-top: 25px;
+		text-align: center;
+		height: 100vh;
+	}
 </style>
   
-<div class="App">
-	<h2>
-		Convert video to GIF
-	</h2>
-	{#if ffmpegReady}
-		<input 
-			type="file" 
-			name="video" 
-			accept="video/*" 
-			on:change={handleLoadingVideo}
-		>
+<MaterialApp theme={theme}>
+	<AppBar class="secondary-color theme--dark">
+		<span slot="title">
+			Convert video to GIF
+		</span>
+		<div style="flex-grow:1" />
+		<Button on:click={toggleTheme}>Toggle theme</Button>
+	</AppBar>
+	<div class="pageContent">
+		{#if ffmpegReady}
+			<input 
+				hidden
+				id="hiddenFileInput"
+				type="file" 
+				name="video" 
+				accept="video/*" 
+				on:change={handleLoadingVideo}
+			>
 
-		{#if videoFile}
-			<button on:click={clearVideo}>Clear Video</button>
-			<video src={URL.createObjectURL(videoFile)} controls={true} />
+			<label for="hiddenFileInput" id="LblBrowse" transition:fade>
+				<Button
+					outlined
+					on:click={() => document.getElementById('hiddenFileInput')?.click()}
+				>
+					Open video
+				</Button>
+			</label>
 
-			
-			<button on:click={convertToGif}>Convert to GIF</button>
-			{#if gifFile !== ''}
-				<button on:click={clearGif}>Clear GIF</button>
-				<img src={gifFile} alt="converted gif" />
+			{#if videoFile}
+				<Button on:click={clearVideo}>Clear Video</Button>
+				<video src={URL.createObjectURL(videoFile)} controls={true} transition:slide />
+
+				
+				<Button on:click={convertToGif}>Convert to GIF</Button>
+				{#if gifFile !== ''}
+					<Button on:click={clearGif}>Clear GIF</Button>
+					<img src={gifFile} alt="converted gif" />
+				{/if}
 			{/if}
 		{/if}
-	{/if}
-</div>
+	</div>
+</MaterialApp>
   

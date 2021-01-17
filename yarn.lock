@@ -3039,6 +3039,11 @@ svelte-hmr@^0.12.1:
   resolved "https://registry.yarnpkg.com/svelte-hmr/-/svelte-hmr-0.12.3.tgz#7835996808763e426669dd62d3ccd46827fc44df"
   integrity sha512-hyggTjuA6E/jWYltj8Q9B9sSumOqopBurwFcqwys4LUp7cCE0H0UC6uYyfvQlEdCCQokON/5E8bmHBOBDUUU9A==
 
+svelte-materialify@^0.3.4:
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/svelte-materialify/-/svelte-materialify-0.3.4.tgz#53bf1701c543f90e13b9f823ce123053ce1e3c35"
+  integrity sha512-94P2UMEFvEFHLksyZllFVU047tl/xkbA8aOlASaAzfEXfWQiWaGiuEnmKywT2AFImoPgFRseL++/6v2F6EBSig==
+
 svelte-preprocess@^4.0.8, svelte-preprocess@^4.6.0:
   version "4.6.1"
   resolved "https://registry.yarnpkg.com/svelte-preprocess/-/svelte-preprocess-4.6.1.tgz#a7de4d91b32d5608b6637da960ee81e6089ae276"
