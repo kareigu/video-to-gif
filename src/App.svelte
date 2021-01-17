@@ -1,28 +1,33 @@
 <script lang='ts'>
-	import { MaterialApp, Button, AppBar, Card } from 'svelte-materialify';
+	import { MaterialApp, Button, AppBar, Card, ProgressLinear } from 'svelte-materialify';
 	import { onMount } from 'svelte';
 	import { slide, fade, blur } from 'svelte/transition'
 	import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
-import { outro_and_destroy_block } from 'svelte/internal';
 
-	let theme: 'dark' | 'light' = 'dark';
+	let theme: 'dark' | 'light' = localStorage.getItem('theme') === 'light' ? 'light' : 'dark';
+
+	const inDev: boolean = import.meta.env.NODE_ENV === 'development' ? true : false;
 
 	function toggleTheme() {
 		theme = theme === 'dark' ? 'light' : 'dark';
 		document.body.setAttribute('class', `theme--${theme}`);
+		localStorage.setItem('theme', theme);
 	}
 
 	const VIDEO = 'video.mp4'
 	const GIF = 'out.gif'
 
-	const ffmpeg = createFFmpeg({ log: true });
+	const ffmpeg = createFFmpeg({log: inDev});
 	let videoFile: File | null;
 	let ffmpegReady = false;
 	let gifFile: string = '';
+	let convertingGif = false;
+	let conversionProgress = 0;
 
 
 	async function loadFFMPEG() {
 		await ffmpeg.load();
+		ffmpeg.setProgress(({ratio}) => conversionProgress = ratio * 100) ;
 		ffmpegReady = true;
 	}
 
@@ -46,11 +51,14 @@ import { outro_and_destroy_block } from 'svelte/internal';
 
 	async function convertToGif() {
 		if(videoFile) {
+			convertingGif = true;
 			ffmpeg.FS('writeFile', VIDEO, await fetchFile(videoFile));
 			await ffmpeg.run('-i', VIDEO, GIF);
 
 			const data = ffmpeg.FS('readFile', GIF);
 			gifFile = URL.createObjectURL(new Blob([data.buffer], { type: 'image/gif' }));
+			convertingGif = false;
+			conversionProgress = 0;
 			ffmpeg.FS('unlink', VIDEO)
 		}
 	}
@@ -89,6 +97,10 @@ import { outro_and_destroy_block } from 'svelte/internal';
 
 	.gifTopControls {
 		margin-bottom: 10px;
+	}
+
+	.progressBar {
+		margin-bottom: 5px;
 	}
 </style>
   
@@ -132,6 +144,15 @@ import { outro_and_destroy_block } from 'svelte/internal';
 				
 				<div class="gifStuff" transition:fade>
 					<div class="gifTopControls" in:fade out:blur>
+						{#if convertingGif}
+							<div class="progressBar" in:fade out:blur>
+								<ProgressLinear 
+									color="blue" 
+									backgroundColor="secondary" 
+									value={conversionProgress} 
+								/>
+							</div>
+						{/if}
 						<Button 
 							on:click={convertToGif}
 							disabled={gifFile === '' ? false : true}
