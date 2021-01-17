@@ -142,7 +142,7 @@
 					<video src={URL.createObjectURL(videoFile)} controls={true} transition:slide />
 				</Card>
 				
-				<div class="gifStuff" transition:fade>
+				<div class="gifStuff" in:slide out:blur>
 					<div class="gifTopControls" in:fade out:blur>
 						{#if convertingGif}
 							<div class="progressBar" in:fade out:blur>
