@@ -115,6 +115,7 @@
 <MaterialApp theme={theme}>
 	<AppBar class="secondary-color theme--dark">
 		<span slot="title">
+			<Icon class="mdi mdi-camera-image" />
 			Convert video to GIF
 		</span>
 		<div style="flex-grow:1" />
@@ -143,11 +144,18 @@
 				disabled={videoFile ? true : false}
 				on:click={() => document.getElementById('hiddenFileInput')?.click()}
 			>
+				<Icon class="mdi mdi-paperclip" />
 				Open video
 			</Button>
 
 			{#if videoFile && ffmpegReady}
-				<Button on:click={clearVideo} class="red">Clear Video</Button>
+				<Button 
+					on:click={clearVideo} 
+					class="red"
+				>
+					<Icon class="mdi mdi-close" />
+					Clear Video
+				</Button>
 			{/if}
 		</div>
 
@@ -176,10 +184,17 @@
 						on:click={convertToGif}
 						disabled={gifFile === '' ? false : true}
 					>
+						<Icon class="mdi mdi-file-restore" />
 						Convert to GIF
 					</Button>
 					{#if gifFile !== ''}
-						<Button on:click={clearGif} class="red">Clear GIF</Button>
+						<Button 
+							on:click={clearGif} 
+							class="red"
+						>
+							<Icon class="mdi mdi-close" />
+							Clear GIF
+						</Button>
 					{/if}
 				</div>
 				{#if gifFile !== ''}
