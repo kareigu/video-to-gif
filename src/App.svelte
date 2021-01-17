@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import { MaterialApp, Button, AppBar, Card, ProgressLinear } from 'svelte-materialify';
+	import { MaterialApp, Button, AppBar, Card, ProgressLinear, Icon } from 'svelte-materialify';
 	import { onMount } from 'svelte';
 	import { slide, fade, blur } from 'svelte/transition'
 	import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
@@ -23,6 +23,8 @@
 	let gifFile: string = '';
 	let convertingGif = false;
 	let conversionProgress = 0;
+
+	$: maxWindowWidth = window.innerWidth < 640 ? window.innerWidth : 640;
 
 
 	async function loadFFMPEG() {
@@ -81,6 +83,11 @@
 </script>
   
 <style type="text/scss">
+	@import url(https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css);
+
+	:global(body) {
+		overflow-x: hidden;
+	}
 
 	.pageContent {
 		margin-top: 25px;
@@ -111,7 +118,14 @@
 			Convert video to GIF
 		</span>
 		<div style="flex-grow:1" />
-		<Button on:click={toggleTheme}>Toggle theme</Button>
+		<Button 
+			on:click={toggleTheme}
+			icon
+			class={theme === 'dark' ? 'deep-purple yellow-text' : 'blue yellow-text'}
+			size="default"
+		>
+			<Icon class={theme === 'dark' ? 'mdi mdi-moon-waxing-crescent' : 'mdi mdi-weather-sunny'} />
+		</Button>
 	</AppBar>
 	<div class="pageContent">
 		<div class="videoTopControls" transition:slide>
@@ -139,7 +153,12 @@
 
 		{#if videoFile && ffmpegReady}
 			<Card raised>
-				<video src={URL.createObjectURL(videoFile)} controls={true} transition:slide />
+				<video 
+					src={URL.createObjectURL(videoFile)} 
+					controls={true} 
+					transition:slide 
+					width={maxWindowWidth}
+				/>
 			</Card>
 			
 			<div class="gifStuff" in:slide out:blur>
@@ -165,7 +184,12 @@
 				</div>
 				{#if gifFile !== ''}
 					<Card raised>
-						<img src={gifFile} alt="converted gif" in:fade out:blur />
+						<img 
+							src={gifFile} 
+							alt="converted gif" 
+							in:fade out:blur 
+							width={maxWindowWidth}
+						/>
 					</Card>
 				{/if}
 			</div>
