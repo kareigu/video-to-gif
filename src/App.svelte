@@ -32,7 +32,6 @@
 	}
 
 	onMount(() => {
-		loadFFMPEG();
 		document.body.setAttribute('class', `theme--${theme}`);
 
 		return () => {
@@ -44,6 +43,8 @@
 
 	function handleLoadingVideo(e: Event) {
 		if(e.target) {
+			if(!ffmpegReady)
+				loadFFMPEG();
 			const target: HTMLInputElement = e.target;
 			videoFile = target.files?.item(0) ? target.files?.item(0) : null;
 		}
@@ -113,63 +114,61 @@
 		<Button on:click={toggleTheme}>Toggle theme</Button>
 	</AppBar>
 	<div class="pageContent">
-		{#if ffmpegReady}
-			<div class="videoTopControls" transition:slide>
-				<input 
-					hidden
-					id="hiddenFileInput"
-					type="file" 
-					name="video" 
-					accept="video/*" 
-					on:change={handleLoadingVideo}
-				>
+		<div class="videoTopControls" transition:slide>
+			<input 
+				hidden
+				id="hiddenFileInput"
+				type="file" 
+				name="video" 
+				accept="video/*" 
+				on:change={handleLoadingVideo}
+			>
 
-				<Button
-					outlined={videoFile ? false : true}
-					disabled={videoFile ? true : false}
-					on:click={() => document.getElementById('hiddenFileInput')?.click()}
-				>
-					Open video
-				</Button>
+			<Button
+				outlined={videoFile ? false : true}
+				disabled={videoFile ? true : false}
+				on:click={() => document.getElementById('hiddenFileInput')?.click()}
+			>
+				Open video
+			</Button>
 
-				{#if videoFile}
-					<Button on:click={clearVideo} class="red">Clear Video</Button>
-				{/if}
-			</div>
+			{#if videoFile && ffmpegReady}
+				<Button on:click={clearVideo} class="red">Clear Video</Button>
+			{/if}
+		</div>
 
-			{#if videoFile}
-				<Card raised>
-					<video src={URL.createObjectURL(videoFile)} controls={true} transition:slide />
-				</Card>
-				
-				<div class="gifStuff" in:slide out:blur>
-					<div class="gifTopControls" in:fade out:blur>
-						{#if convertingGif}
-							<div class="progressBar" in:fade out:blur>
-								<ProgressLinear 
-									color="blue" 
-									backgroundColor="secondary" 
-									value={conversionProgress} 
-								/>
-							</div>
-						{/if}
-						<Button 
-							on:click={convertToGif}
-							disabled={gifFile === '' ? false : true}
-						>
-							Convert to GIF
-						</Button>
-						{#if gifFile !== ''}
-							<Button on:click={clearGif} class="red">Clear GIF</Button>
-						{/if}
-					</div>
+		{#if videoFile && ffmpegReady}
+			<Card raised>
+				<video src={URL.createObjectURL(videoFile)} controls={true} transition:slide />
+			</Card>
+			
+			<div class="gifStuff" in:slide out:blur>
+				<div class="gifTopControls" in:fade out:blur>
+					{#if convertingGif}
+						<div class="progressBar" in:fade out:blur>
+							<ProgressLinear 
+								color="blue" 
+								backgroundColor="secondary" 
+								value={conversionProgress} 
+							/>
+						</div>
+					{/if}
+					<Button 
+						on:click={convertToGif}
+						disabled={gifFile === '' ? false : true}
+					>
+						Convert to GIF
+					</Button>
 					{#if gifFile !== ''}
-						<Card raised>
-							<img src={gifFile} alt="converted gif" in:fade out:blur />
-						</Card>
+						<Button on:click={clearGif} class="red">Clear GIF</Button>
 					{/if}
 				</div>
-			{/if}
+				{#if gifFile !== ''}
+					<Card raised>
+						<img src={gifFile} alt="converted gif" in:fade out:blur />
+					</Card>
+				{/if}
+			</div>
 		{/if}
 	</div>
 </MaterialApp>
