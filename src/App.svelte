@@ -1,8 +1,9 @@
 <script lang='ts'>
-	import { MaterialApp, Button, AppBar } from 'svelte-materialify';
+	import { MaterialApp, Button, AppBar, Card } from 'svelte-materialify';
 	import { onMount } from 'svelte';
-	import { slide, fade } from 'svelte/transition'
+	import { slide, fade, blur } from 'svelte/transition'
 	import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
+import { outro_and_destroy_block } from 'svelte/internal';
 
 	let theme: 'dark' | 'light' = 'dark';
 
@@ -27,6 +28,7 @@
 
 	onMount(() => {
 		loadFFMPEG();
+		document.body.setAttribute('class', `theme--${theme}`);
 
 		return () => {
 			clearVideo();
@@ -59,12 +61,12 @@
 	}
 
 	async function clearVideo() {
+		videoFile = null;
 		document.getElementById('hiddenFileInput')!.value = null;
 		if(gifFile !== '') {
 			ffmpeg.FS('unlink', GIF);
 			gifFile = '';
 		}
-		videoFile = null;
 	}
 
 </script>
@@ -73,8 +75,20 @@
 
 	.pageContent {
 		margin-top: 25px;
+		padding-bottom: 30px;
 		text-align: center;
-		height: 100vh;
+	}
+
+	.videoTopControls {
+		margin-bottom: 20px;
+	}
+
+	.gifStuff {
+		margin-top: 20px;
+	}
+
+	.gifTopControls {
+		margin-bottom: 10px;
 	}
 </style>
   
@@ -88,34 +102,52 @@
 	</AppBar>
 	<div class="pageContent">
 		{#if ffmpegReady}
-			<input 
-				hidden
-				id="hiddenFileInput"
-				type="file" 
-				name="video" 
-				accept="video/*" 
-				on:change={handleLoadingVideo}
-			>
+			<div class="videoTopControls" transition:slide>
+				<input 
+					hidden
+					id="hiddenFileInput"
+					type="file" 
+					name="video" 
+					accept="video/*" 
+					on:change={handleLoadingVideo}
+				>
 
-			<label for="hiddenFileInput" id="LblBrowse" transition:fade>
 				<Button
-					outlined
+					outlined={videoFile ? false : true}
+					disabled={videoFile ? true : false}
 					on:click={() => document.getElementById('hiddenFileInput')?.click()}
 				>
 					Open video
 				</Button>
-			</label>
+
+				{#if videoFile}
+					<Button on:click={clearVideo} class="red">Clear Video</Button>
+				{/if}
+			</div>
 
 			{#if videoFile}
-				<Button on:click={clearVideo}>Clear Video</Button>
-				<video src={URL.createObjectURL(videoFile)} controls={true} transition:slide />
-
+				<Card raised>
+					<video src={URL.createObjectURL(videoFile)} controls={true} transition:slide />
+				</Card>
 				
-				<Button on:click={convertToGif}>Convert to GIF</Button>
-				{#if gifFile !== ''}
-					<Button on:click={clearGif}>Clear GIF</Button>
-					<img src={gifFile} alt="converted gif" />
-				{/if}
+				<div class="gifStuff" transition:fade>
+					<div class="gifTopControls" in:fade out:blur>
+						<Button 
+							on:click={convertToGif}
+							disabled={gifFile === '' ? false : true}
+						>
+							Convert to GIF
+						</Button>
+						{#if gifFile !== ''}
+							<Button on:click={clearGif} class="red">Clear GIF</Button>
+						{/if}
+					</div>
+					{#if gifFile !== ''}
+						<Card raised>
+							<img src={gifFile} alt="converted gif" in:fade out:blur />
+						</Card>
+					{/if}
+				</div>
 			{/if}
 		{/if}
 	</div>
