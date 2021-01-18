@@ -1,4 +1,5 @@
-use actix_web::{App, HttpServer};
+extern crate env_logger;
+use actix_web::{App, HttpServer, middleware::Logger};
 mod config;
 mod routes;
 mod certs;
@@ -6,6 +7,8 @@ mod certs;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    std::env::set_var("RUST_LOG", "actix_web=info");
+    env_logger::init();
 
     let config = config::read_config();
     let builder = certs::read_certs();
@@ -14,10 +17,11 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .route("/", routes::index_route())
             .service(routes::index_files())
+            .wrap(Logger::default())
     })
     .shutdown_timeout(config.shutdown_timeout)
     .workers(config.worker_count)
-    .bind_openssl(format!("127.0.0.1:{}", config.port), builder)?
+    .bind(format!("127.0.0.1:{}", config.port))?
     .run()
     .await
 }
