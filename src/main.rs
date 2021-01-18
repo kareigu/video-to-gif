@@ -1,5 +1,5 @@
 extern crate env_logger;
-use actix_web::{App, HttpServer, middleware::Logger};
+use actix_web::{App, HttpServer, middleware::Logger, middleware::Compress};
 mod config;
 mod routes;
 mod certs;
@@ -18,6 +18,7 @@ async fn main() -> std::io::Result<()> {
             .route("/", routes::index_route())
             .service(routes::index_files())
             .wrap(Logger::default())
+            .wrap(Compress::default())
     })
     .shutdown_timeout(config.shutdown_timeout)
     .workers(config.worker_count)
