@@ -5,7 +5,14 @@
 * Install dev dependencies required for building by running `yarn`
 * Build production build of the Svelte project with `yarn build`
 
-### Minimal webserver written in Rust
+### Minimal webserver written in Rust using actix-web
 
 * Build webserver executable with `cargo build --release`
 * After building the executable can be found under `target/release`
+---
+* Server settings can be configured by creating `config.toml` at project root  
+```
+port = <number between 0 and 65535 | defaults to 8080>
+worker_count = <usize, the amount of cores for actix to use | defaults to 2>
+shutdown_timeout = <u64, soft shutdown timer in seconds | defaults to 15>
+```
