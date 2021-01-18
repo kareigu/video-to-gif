@@ -2,7 +2,8 @@
 	import { MaterialApp, Button, AppBar, Card, ProgressLinear, Icon } from 'svelte-materialify';
 	import { onMount } from 'svelte';
 	import { slide, fade, blur } from 'svelte/transition'
-	import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
+	import { fetchFile } from '@ffmpeg/ffmpeg';
+	import initFFmpeg from './ffmpeg';
 
 	let theme: 'dark' | 'light' = localStorage.getItem('theme') === 'light' ? 'light' : 'dark';
 
@@ -17,7 +18,8 @@
 	const VIDEO = 'video.mp4'
 	const GIF = 'out.gif'
 
-	const ffmpeg = createFFmpeg({log: inDev});
+	const ffmpeg = initFFmpeg(inDev);
+
 	let videoFile: File | null;
 	let ffmpegReady = false;
 	let gifFile: string = '';
@@ -83,7 +85,7 @@
 </script>
   
 <style type="text/scss">
-	@import url(https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css);
+	@import url(/materialdesignicons.min.css);
 
 	:global(body) {
 		overflow-x: hidden;

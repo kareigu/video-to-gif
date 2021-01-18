@@ -15,7 +15,7 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(|| {
         App::new()
-            .route("/", routes::index_route())
+            .service(routes::index_route)
             .service(routes::index_files())
             .wrap(Logger::default())
             .wrap(Compress::default())

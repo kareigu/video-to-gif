@@ -1,12 +1,16 @@
-use actix_web::{web::get, Result, HttpRequest, Route};
-use actix_files::{NamedFile, Files};
+use actix_web::{get, HttpResponse};
+use actix_files::{Files};
+use std::fs;
 
-async fn index(_req: HttpRequest) -> Result<NamedFile> {
-  Ok(NamedFile::open("front/build/index.html")?)
-}
 
-pub fn index_route() -> Route {
-  get().to(index)
+#[get("/")]
+pub fn index_route() -> HttpResponse {
+  let index = fs::read_to_string("front/build/index.html").unwrap();
+  HttpResponse::Ok()
+    .content_type("text/html")
+    .header("Cross-Origin-Opener-Policy", "same-origin")
+    .header("Cross-Origin-Embedder-Policy", "require-corp")
+    .body(index)
 }
 
 pub fn index_files() -> Files {
