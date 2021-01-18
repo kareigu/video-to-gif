@@ -21,7 +21,7 @@ async fn main() -> std::io::Result<()> {
     })
     .shutdown_timeout(config.shutdown_timeout)
     .workers(config.worker_count)
-    .bind(format!("127.0.0.1:{}", config.port))?
+    .bind_openssl(format!("127.0.0.1:{}", config.port), builder)?
     .run()
     .await
 }
