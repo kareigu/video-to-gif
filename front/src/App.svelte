@@ -2,17 +2,19 @@
 	import { MaterialApp, Button, AppBar, Card, ProgressLinear, Icon } from 'svelte-materialify';
 	import { onMount } from 'svelte';
 	import { slide, fade, blur } from 'svelte/transition'
-	import { fetchFile } from '@ffmpeg/ffmpeg';
-	import { ffmpeg, VIDEO, GIF } from './utils/ffmpeg';
+	import { ffmpeg, processVideo, videoClearer, gifClearer } from './utils/ffmpeg';
 	import { toggleTheme, initTheme } from './utils/theme';
 	import type { TTheme } from './utils/theme';
+	import type { TFFMPEGStatus, TVideoFile } from './utils/ffmpeg';
 
 
-	let videoFile: File | null;
-	let ffmpegReady = false;
+	let videoFile: TVideoFile;
 	let gifFile: string = '';
-	let convertingGif = false;
-	let conversionProgress = 0;
+	let ffmpegStatus: TFFMPEGStatus = {
+		ready: false,
+		progress: 0,
+		converting: false
+	}
 	let theme: TTheme = initTheme();
 
 	$: maxWindowWidth = window.innerWidth < 640 ? window.innerWidth : 640;
@@ -24,8 +26,8 @@
 
 	async function loadFFMPEG() {
 		await ffmpeg.load();
-		ffmpeg.setProgress(({ratio}) => conversionProgress = ratio * 100) ;
-		ffmpegReady = true;
+		ffmpeg.setProgress(({ratio}) => ffmpegStatus.progress = ratio * 100) ;
+		ffmpegStatus.ready = true;
 	}
 
 	onMount(() => {
@@ -40,7 +42,7 @@
 
 	function handleLoadingVideo(e: Event) {
 		if(e.target) {
-			if(!ffmpegReady)
+			if(!ffmpegStatus.ready)
 				loadFFMPEG();
 			const target: HTMLInputElement = e.target;
 			videoFile = target.files?.item(0) ? target.files?.item(0) : null;
@@ -49,30 +51,19 @@
 
 	async function convertToGif() {
 		if(videoFile) {
-			convertingGif = true;
-			ffmpeg.FS('writeFile', VIDEO, await fetchFile(videoFile));
-			await ffmpeg.run('-i', VIDEO, GIF);
-
-			const data = ffmpeg.FS('readFile', GIF);
-			gifFile = URL.createObjectURL(new Blob([data.buffer], { type: 'image/gif' }));
-			convertingGif = false;
-			conversionProgress = 0;
-			ffmpeg.FS('unlink', VIDEO)
+			ffmpegStatus.converting = true;
+			gifFile = await processVideo(videoFile);
+			ffmpegStatus = {...ffmpegStatus, converting: false, progress: 0};
 		}
 	}
 
-	async function clearGif() {
-		ffmpeg.FS('unlink', GIF);
-		gifFile = '';
+	function clearGif() {
+		gifFile = gifClearer();
 	}
 
-	async function clearVideo() {
+	function clearVideo() {
 		videoFile = null;
-		document.getElementById('hiddenFileInput')!.value = null;
-		if(gifFile !== '') {
-			ffmpeg.FS('unlink', GIF);
-			gifFile = '';
-		}
+		gifFile = videoClearer(gifFile);
 	}
 
 </script>
@@ -117,7 +108,7 @@
 				Open video
 			</Button>
 
-			{#if videoFile && ffmpegReady}
+			{#if videoFile && ffmpegStatus.ready}
 				<Button 
 					on:click={clearVideo} 
 					class="red"
@@ -128,7 +119,7 @@
 			{/if}
 		</div>
 
-		{#if videoFile && ffmpegReady}
+		{#if videoFile && ffmpegStatus.ready}
 			<Card raised>
 				<video 
 					src={URL.createObjectURL(videoFile)} 
@@ -140,12 +131,12 @@
 			
 			<div class="gifStuff" in:slide out:blur>
 				<div class="gifTopControls" in:fade out:blur>
-					{#if convertingGif}
+					{#if ffmpegStatus.converting}
 						<div class="progressBar" in:fade out:blur>
 							<ProgressLinear 
 								color="blue" 
 								backgroundColor="secondary" 
-								value={conversionProgress} 
+								value={ffmpegStatus.progress} 
 							/>
 						</div>
 					{/if}
