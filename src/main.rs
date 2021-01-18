@@ -1,12 +1,9 @@
-use actix_web::{web, App, HttpServer, Result, HttpRequest};
-use actix_files::NamedFile;
+use actix_web::{App, HttpServer};
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 
 mod config;
+mod routes;
 
-async fn index(_req: HttpRequest) -> Result<NamedFile> {
-    Ok(NamedFile::open("front/build/index.html")?)
-}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -20,8 +17,8 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(|| {
         App::new()
-            .route("/", web::get().to(index))
-            .service(actix_files::Files::new("/", "front/build"))
+            .route("/", routes::index_route())
+            .service(routes::index_files())
     })
     .shutdown_timeout(config.shutdown_timeout)
     .workers(config.worker_count)
