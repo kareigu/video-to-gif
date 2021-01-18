@@ -19,6 +19,7 @@ export async function processVideo(videoFile: TVideoFile) {
 export function videoClearer(gifFile: string) {
   const input = document.getElementById('hiddenFileInput');
   if(input)
+    //@ts-expect-error
     input.value = null;
   if(gifFile !== '') {
     ffmpeg.FS('unlink', GIF);
