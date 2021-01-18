@@ -13,6 +13,7 @@
 * Server settings can be configured by creating `config.toml` at project root  
 ```
 port = <number between 0 and 65535 | defaults to 8080>
+ip = <string, should be set to your server's local ip | defaults to localhost>
 worker_count = <usize, the amount of cores for actix to use | defaults to 2>
 shutdown_timeout = <u64, soft shutdown timer in seconds | defaults to 15>
 ```
