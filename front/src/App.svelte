@@ -44,6 +44,7 @@
 		if(e.target) {
 			if(!ffmpegStatus.ready)
 				loadFFMPEG();
+			//@ts-expect-error
 			const target: HTMLInputElement = e.target;
 			videoFile = target.files?.item(0) ? target.files?.item(0) : null;
 		}
@@ -67,8 +68,8 @@
 	}
 
 </script>
-  
-<style type="text/scss">
+
+<style lang="scss">
 	@import 'App.scss';
 </style>
   
