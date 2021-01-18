@@ -2,9 +2,7 @@ use actix_web::{web, App, HttpServer, Result, HttpRequest};
 use actix_files::NamedFile;
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 
-static PORT: u16 = 8080;
-static SHUTDOWN_TIME: u64 = 15;
-static WORKERS: usize = 4;
+mod config;
 
 async fn index(_req: HttpRequest) -> Result<NamedFile> {
     Ok(NamedFile::open("front/build/index.html")?)
@@ -12,6 +10,8 @@ async fn index(_req: HttpRequest) -> Result<NamedFile> {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+
+    let config = config::read_config();
 
     let mut builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
 
@@ -23,9 +23,9 @@ async fn main() -> std::io::Result<()> {
             .route("/", web::get().to(index))
             .service(actix_files::Files::new("/", "front/build"))
     })
-    .shutdown_timeout(SHUTDOWN_TIME)
-    .workers(WORKERS)
-    .bind_openssl(format!("127.0.0.1:{}", PORT), builder)?
+    .shutdown_timeout(config.shutdown_timeout)
+    .workers(config.worker_count)
+    .bind_openssl(format!("127.0.0.1:{}", config.port), builder)?
     .run()
     .await
 }
