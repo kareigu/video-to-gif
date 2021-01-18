@@ -3,30 +3,23 @@
 	import { onMount } from 'svelte';
 	import { slide, fade, blur } from 'svelte/transition'
 	import { fetchFile } from '@ffmpeg/ffmpeg';
-	import initFFmpeg from './ffmpeg';
+	import { ffmpeg, VIDEO, GIF } from './utils/ffmpeg';
+	import { toggleTheme, initTheme } from './utils/theme';
+	import type { TTheme } from './utils/theme';
 
-	let theme: 'dark' | 'light' = localStorage.getItem('theme') === 'light' ? 'light' : 'dark';
-
-	const inDev: boolean = import.meta.env.NODE_ENV === 'development' ? true : false;
-
-	function toggleTheme() {
-		theme = theme === 'dark' ? 'light' : 'dark';
-		document.body.setAttribute('class', `theme--${theme}`);
-		localStorage.setItem('theme', theme);
-	}
-
-	const VIDEO = 'video.mp4'
-	const GIF = 'out.gif'
-
-	const ffmpeg = initFFmpeg(inDev);
 
 	let videoFile: File | null;
 	let ffmpegReady = false;
 	let gifFile: string = '';
 	let convertingGif = false;
 	let conversionProgress = 0;
+	let theme: TTheme = initTheme();
 
 	$: maxWindowWidth = window.innerWidth < 640 ? window.innerWidth : 640;
+
+	function handleThemeToggle() {
+		theme = toggleTheme(theme);
+	}
 
 
 	async function loadFFMPEG() {
@@ -85,33 +78,7 @@
 </script>
   
 <style type="text/scss">
-	@import url(/materialdesignicons.min.css);
-
-	:global(body) {
-		overflow-x: hidden;
-	}
-
-	.pageContent {
-		margin-top: 25px;
-		padding-bottom: 30px;
-		text-align: center;
-	}
-
-	.videoTopControls {
-		margin-bottom: 20px;
-	}
-
-	.gifStuff {
-		margin-top: 20px;
-	}
-
-	.gifTopControls {
-		margin-bottom: 10px;
-	}
-
-	.progressBar {
-		margin-bottom: 5px;
-	}
+	@import 'App.scss';
 </style>
   
 <MaterialApp theme={theme}>
@@ -122,7 +89,7 @@
 		</span>
 		<div style="flex-grow:1" />
 		<Button 
-			on:click={toggleTheme}
+			on:click={handleThemeToggle}
 			icon
 			class={theme === 'dark' ? 'deep-purple yellow-text' : 'blue yellow-text'}
 			size="default"
