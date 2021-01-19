@@ -117,7 +117,7 @@
 			</Button>
 			
 			{#if unsupported}
-				<h4>WebAssembly isn't supported on your browser or device</h4>
+				<p>WebAssembly isn't supported on your browser or device</p>
 			{/if}
 
 			{#if videoFile && ffmpegStatus.ready}
