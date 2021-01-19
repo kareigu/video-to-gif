@@ -1,0 +1,7 @@
+services:
+  actix:
+    image: mxr/video-to-gif:latest
+    container_name: video-to-gif
+    restart: unless-stopped
+    ports:
+      - 10.20.30.22:4340:4340
