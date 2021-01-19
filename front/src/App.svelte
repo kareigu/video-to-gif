@@ -15,6 +15,7 @@
 		progress: 0,
 		converting: false
 	}
+	let unsupported = false;
 	let theme: TTheme = initTheme();
 
 	$: maxWindowWidth = window.innerWidth < 640 ? window.innerWidth : 640;
@@ -26,8 +27,12 @@
 
 	async function loadFFMPEG() {
 		await ffmpeg.load();
-		ffmpeg.setProgress(({ratio}) => ffmpegStatus.progress = ratio * 100) ;
-		ffmpegStatus.ready = true;
+		if(ffmpeg.isLoaded()) {
+			ffmpeg.setProgress(({ratio}) => ffmpegStatus.progress = ratio * 100) ;
+			ffmpegStatus.ready = true;
+		} else {
+			unsupported = true;
+		}
 	}
 
 	onMount(() => {
@@ -108,6 +113,10 @@
 				<Icon class="mdi mdi-paperclip" />
 				Open video
 			</Button>
+			
+			{#if unsupported}
+				<h4>WebAssembly isn't supported on your browser or device</h4>
+			{/if}
 
 			{#if videoFile && ffmpegStatus.ready}
 				<Button 
