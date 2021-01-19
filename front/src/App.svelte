@@ -4,6 +4,7 @@
 	import { slide, fade, blur } from 'svelte/transition'
 	import { ffmpeg, processVideo, videoClearer, gifClearer } from './utils/ffmpeg';
 	import { toggleTheme, initTheme } from './utils/theme';
+	import isMobile from './utils/isMobile';
 	import type { TTheme } from './utils/theme';
 	import type { TFFMPEGStatus, TVideoFile } from './utils/ffmpeg';
 
@@ -15,8 +16,9 @@
 		progress: 0,
 		converting: false
 	}
-	let unsupported = false;
+	let unsupported = isMobile();
 	let theme: TTheme = initTheme();
+	
 
 	$: maxWindowWidth = window.innerWidth < 640 ? window.innerWidth : 640;
 
@@ -37,7 +39,7 @@
 
 	onMount(() => {
 		document.body.setAttribute('class', `theme--${theme}`);
-
+		console.log(unsupported);
 		return () => {
 			clearVideo();
 		}
