@@ -1,4 +1,5 @@
 # Convert videos to GIFs
+## [Live demo](https://gif.mxrr.dev/)
 ### Svelte application for converting videofiles to gifs by using the WASM port of ffmpeg
 
 * Navigate inside of `front/`
@@ -9,6 +10,7 @@
 
 * Build webserver executable with `cargo build --release`
 * After building the executable can be found under `target/release`
+* Add your SSL certificates into a folder named `certs/` as `key.pem` and `cert.pem`
 ---
 * Server settings can be configured by creating `config.toml` at project root  
 ```
