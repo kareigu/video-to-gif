@@ -7,7 +7,8 @@
   import { videoFile, gifFile, ffmpegReady, ffmpegConverting, ffmpegProgress } from '../stores/ffmpegStore';
   import { theme, unsupported } from '../stores/utilStore';
 
-  $: maxWindowWidth = window.innerWidth < 640 ? window.innerWidth : 640;
+  let innerWidth = window.innerWidth;
+  $: maxMediaWidth = innerWidth < 640 ? innerWidth : 640;
   
 
 
@@ -22,6 +23,8 @@
 <style lang="scss">
   @import './FFmpeg.scss';
 </style>
+
+<svelte:window bind:innerWidth={innerWidth} />
 
 <div class="videoTopControls" transition:slide>
   <input 
@@ -63,7 +66,7 @@
       src={URL.createObjectURL(get(videoFile))} 
       controls={true} 
       transition:slide 
-      width={maxWindowWidth}
+      width={maxMediaWidth}
     />
   </Card>
   
@@ -101,7 +104,7 @@
           src={$gifFile} 
           alt="converted gif" 
           in:fade out:blur 
-          width={maxWindowWidth}
+          width={maxMediaWidth}
         />
       </Card>
     {/if}
