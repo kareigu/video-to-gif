@@ -3,19 +3,14 @@
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 	import { slide, fade, blur } from 'svelte/transition'
-	import { ffmpeg, processVideo, clearVideo, clearGif, handleLoadingVideo, convertToGif } from './utils/ffmpeg';
-	import { toggleTheme, initTheme } from './utils/theme';
-	import isMobile from './utils/isMobile';
+	import { clearVideo, clearGif, handleLoadingVideo, convertToGif } from './utils/ffmpeg';
+	import { toggleTheme } from './utils/theme';
 	import { videoFile, gifFile, ffmpegReady, ffmpegConverting, ffmpegProgress } from './stores/ffmpegStore';
 	import { theme, unsupported } from './stores/utilStore';
-	import type { TTheme } from './utils/theme';
-	import type { TFFMPEGStatus } from './utils/ffmpeg';
-
 	$: maxWindowWidth = window.innerWidth < 640 ? window.innerWidth : 640;
 
 	onMount(() => {
 		document.body.setAttribute('class', `theme--${get(theme)}`);
-		console.log(unsupported);
 		return () => {
 			clearVideo();
 		}
