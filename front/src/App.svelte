@@ -7,19 +7,14 @@
 	import { toggleTheme, initTheme } from './utils/theme';
 	import isMobile from './utils/isMobile';
 	import { videoFile, gifFile, ffmpegReady, ffmpegConverting, ffmpegProgress } from './stores/ffmpegStore';
+	import { theme } from './stores/utilStore';
 	import type { TTheme } from './utils/theme';
 	import type { TFFMPEGStatus } from './utils/ffmpeg';
 
 
 	let unsupported = isMobile();
-	let theme: TTheme = initTheme();
-	
 
 	$: maxWindowWidth = window.innerWidth < 640 ? window.innerWidth : 640;
-
-	function handleThemeToggle() {
-		theme = toggleTheme(theme);
-	}
 
 
 	async function loadFFMPEG() {
@@ -84,12 +79,12 @@
 		</span>
 		<div style="flex-grow:1" />
 		<Button 
-			on:click={handleThemeToggle}
+			on:click={toggleTheme}
 			icon
-			class={theme === 'dark' ? 'deep-purple yellow-text' : 'blue yellow-text'}
+			class={$theme === 'dark' ? 'deep-purple yellow-text' : 'blue yellow-text'}
 			size="default"
 		>
-			<Icon class={theme === 'dark' ? 'mdi mdi-moon-waxing-crescent' : 'mdi mdi-weather-sunny'} />
+			<Icon class={$theme === 'dark' ? 'mdi mdi-moon-waxing-crescent' : 'mdi mdi-weather-sunny'} />
 		</Button>
 	</AppBar>
 	<div class="pageContent">
