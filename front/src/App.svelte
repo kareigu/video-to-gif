@@ -27,12 +27,13 @@
 			Convert video to GIF
 		</span>
 		<div style="flex-grow:1" />
-		<div style="margin-right: 15px">
+		<div style="margin-right: 5px">
 			<Button 
 				on:click={toggleTheme}
 				icon
 				class={$theme === 'dark' ? 'deep-purple yellow-text' : 'blue yellow-text'}
 				size="default"
+				style="margin-right: 2px"
 			>
 				<Icon class={$theme === 'dark' ? 'mdi mdi-moon-waxing-crescent' : 'mdi mdi-weather-sunny'} />
 			</Button>
