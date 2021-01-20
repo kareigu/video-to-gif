@@ -1,4 +1,7 @@
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
+import { get } from 'svelte/store';
+import { videoFile, gifFile, ffmpegReady, ffmpegConverting, ffmpegProgress } from '../stores/ffmpegStore';
+import { unsupported } from '../stores/utilStore';
 
 export type TVideoFile = File | null;
 export type TFFMPEGStatus = {
@@ -16,25 +19,56 @@ export async function processVideo(videoFile: TVideoFile) {
   return URL.createObjectURL(new Blob([data.buffer], { type: 'image/gif' }));
 }
 
-export function videoClearer(gifFile: string) {
+
+export function clearVideo() {
   const input = document.getElementById('hiddenFileInput');
   if(input)
     //@ts-expect-error
     input.value = null;
-  if(gifFile !== '') {
-    ffmpeg.FS('unlink', GIF);
+  if(get(gifFile) !== '') {
+    clearGif();
   }
-  return '';
+  videoFile.set(null);
 }
 
-export function gifClearer() {
+export function clearGif() {
   ffmpeg.FS('unlink', GIF);
-  return '';
+  gifFile.set('');
+}
+
+async function loadFFMPEG() {
+  await ffmpeg.load();
+  if(ffmpeg.isLoaded()) {
+    ffmpeg.setProgress(({ratio}) => ffmpegProgress.set(ratio * 100));
+    ffmpegReady.set(true);
+  } else {
+    unsupported.set(true);
+  }
+}
+
+export function handleLoadingVideo(e: Event) {
+  if(e.target) {
+    if(!get(ffmpegReady))
+      loadFFMPEG();
+    //@ts-expect-error
+    const target: HTMLInputElement = e.target;
+    videoFile.set(target.files?.item(0) ? target.files?.item(0) : null);
+  }
 }
 
 
-export const VIDEO = 'video.mp4'
-export const GIF = 'out.gif'
+export async function convertToGif() {
+  if(get(videoFile)) {
+    ffmpegConverting.set(true);
+    gifFile.set(await processVideo(get(videoFile)));
+    ffmpegConverting.set(false);
+    ffmpegProgress.set(0);
+  }
+}
+
+
+const VIDEO = 'video.mp4'
+const GIF = 'out.gif'
 
 const inDev: boolean = import.meta.env.NODE_ENV === 'development' ? true : false;
 

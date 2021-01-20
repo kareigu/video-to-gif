@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 	import { slide, fade, blur } from 'svelte/transition'
-	import { ffmpeg, processVideo, videoClearer, gifClearer } from './utils/ffmpeg';
+	import { ffmpeg, processVideo, clearVideo, clearGif, handleLoadingVideo, convertToGif } from './utils/ffmpeg';
 	import { toggleTheme, initTheme } from './utils/theme';
 	import isMobile from './utils/isMobile';
 	import { videoFile, gifFile, ffmpegReady, ffmpegConverting, ffmpegProgress } from './stores/ffmpegStore';
@@ -13,17 +13,6 @@
 
 	$: maxWindowWidth = window.innerWidth < 640 ? window.innerWidth : 640;
 
-
-	async function loadFFMPEG() {
-		await ffmpeg.load();
-		if(ffmpeg.isLoaded()) {
-			ffmpeg.setProgress(({ratio}) => ffmpegProgress.set(ratio * 100));
-			ffmpegReady.set(true);
-		} else {
-			unsupported.set(true);
-		}
-	}
-
 	onMount(() => {
 		document.body.setAttribute('class', `theme--${get(theme)}`);
 		console.log(unsupported);
@@ -31,37 +20,6 @@
 			clearVideo();
 		}
 	});
-
-
-
-	function handleLoadingVideo(e: Event) {
-		if(e.target) {
-			if(!get(ffmpegReady))
-				loadFFMPEG();
-			//@ts-expect-error
-			const target: HTMLInputElement = e.target;
-			videoFile.set(target.files?.item(0) ? target.files?.item(0) : null);
-		}
-	}
-
-	async function convertToGif() {
-		if($videoFile) {
-			ffmpegConverting.set(true);
-			gifFile.set(await processVideo(get(videoFile)));
-			ffmpegConverting.set(false);
-			ffmpegProgress.set(0);
-		}
-	}
-
-	function clearGif() {
-		gifFile.set(gifClearer());
-	}
-
-	function clearVideo() {
-		videoFile.set(null);
-		gifFile.set(videoClearer(get(gifFile)));
-	}
-
 </script>
 
 <style lang="scss">
