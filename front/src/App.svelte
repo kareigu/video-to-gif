@@ -1,15 +1,16 @@
 <script lang='ts'>
 	import { MaterialApp, Button, AppBar, Card, ProgressLinear, Icon } from 'svelte-materialify';
 	import { onMount } from 'svelte';
+	import { get } from 'svelte/store';
 	import { slide, fade, blur } from 'svelte/transition'
 	import { ffmpeg, processVideo, videoClearer, gifClearer } from './utils/ffmpeg';
 	import { toggleTheme, initTheme } from './utils/theme';
 	import isMobile from './utils/isMobile';
+	import { videoFile } from './stores/ffmpegStore';
 	import type { TTheme } from './utils/theme';
-	import type { TFFMPEGStatus, TVideoFile } from './utils/ffmpeg';
+	import type { TFFMPEGStatus } from './utils/ffmpeg';
 
 
-	let videoFile: TVideoFile;
 	let gifFile: string = '';
 	let ffmpegStatus: TFFMPEGStatus = {
 		ready: false,
@@ -53,14 +54,14 @@
 				loadFFMPEG();
 			//@ts-expect-error
 			const target: HTMLInputElement = e.target;
-			videoFile = target.files?.item(0) ? target.files?.item(0) : null;
+			videoFile.set(target.files?.item(0) ? target.files?.item(0) : null);
 		}
 	}
 
 	async function convertToGif() {
-		if(videoFile) {
+		if($videoFile) {
 			ffmpegStatus.converting = true;
-			gifFile = await processVideo(videoFile);
+			gifFile = await processVideo(get(videoFile));
 			ffmpegStatus = {...ffmpegStatus, converting: false, progress: 0};
 		}
 	}
@@ -70,14 +71,14 @@
 	}
 
 	function clearVideo() {
-		videoFile = null;
+		videoFile.set(null);
 		gifFile = videoClearer(gifFile);
 	}
 
 </script>
 
 <style lang="scss">
-	@import 'App.scss';
+	@import './App.scss';
 </style>
   
 <MaterialApp theme={theme}>
@@ -108,8 +109,8 @@
 			>
 
 			<Button
-				outlined={videoFile ? false : true}
-				disabled={videoFile ? true : false}
+				outlined={$videoFile ? false : true}
+				disabled={$videoFile ? true : false}
 				on:click={() => document.getElementById('hiddenFileInput')?.click()}
 			>
 				<Icon class="mdi mdi-paperclip" />
@@ -120,7 +121,7 @@
 				<p>WebAssembly isn't supported on your browser or device</p>
 			{/if}
 
-			{#if videoFile && ffmpegStatus.ready}
+			{#if $videoFile && ffmpegStatus.ready}
 				<Button 
 					on:click={clearVideo} 
 					class="red"
@@ -131,10 +132,10 @@
 			{/if}
 		</div>
 
-		{#if videoFile && ffmpegStatus.ready}
+		{#if $videoFile && ffmpegStatus.ready}
 			<Card raised>
 				<video 
-					src={URL.createObjectURL(videoFile)} 
+					src={URL.createObjectURL(get(videoFile))} 
 					controls={true} 
 					transition:slide 
 					width={maxWindowWidth}
