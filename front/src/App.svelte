@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import { MaterialApp, Button, AppBar, Icon } from 'svelte-materialify';
+	import { MaterialApp, Button, AppBar, Icon, Tooltip } from 'svelte-materialify';
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 	import FFmpeg from './components/FFmpeg.svelte';
@@ -28,23 +28,30 @@
 		</span>
 		<div style="flex-grow:1" />
 		<div style="margin-right: 5px">
-			<Button 
-				on:click={toggleTheme}
-				icon
-				class={$theme === 'dark' ? 'deep-purple yellow-text' : 'blue yellow-text'}
-				size="default"
-				style="margin-right: 2px"
-			>
-				<Icon class={$theme === 'dark' ? 'mdi mdi-moon-waxing-crescent' : 'mdi mdi-weather-sunny'} />
-			</Button>
-			<Button 
-				on:click={() => aboutOpen.set(!get(aboutOpen))}
-				icon
-				class="white blue-text"
-				size="default"
-			>
-				<Icon class="mdi mdi-alert-circle-outline" />
-			</Button>
+			<Tooltip bottom>
+				<Button 
+					on:click={toggleTheme}
+					icon
+					class={$theme === 'dark' ? 'deep-purple yellow-text' : 'blue yellow-text'}
+					size="default"
+					style="margin-right: 2px"
+				>
+					<Icon class={$theme === 'dark' ? 'mdi mdi-moon-waxing-crescent' : 'mdi mdi-weather-sunny'} />
+				</Button>
+				<span slot="tip">Switch to {$theme === 'dark' ? 'light' : 'dark'}</span>
+			</Tooltip>
+
+			<Tooltip bottom>
+				<Button 
+					on:click={() => aboutOpen.set(!get(aboutOpen))}
+					icon
+					class="white blue-text"
+					size="default"
+				>
+					<Icon class="mdi mdi-alert-circle-outline" />
+				</Button>
+				<span slot="tip">About</span>
+			</Tooltip>
 		</div>
 	</AppBar>
 	<div class="pageContent">
