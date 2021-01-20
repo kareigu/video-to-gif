@@ -28,7 +28,7 @@
 	}
 
 	onMount(() => {
-		document.body.setAttribute('class', `theme--${theme}`);
+		document.body.setAttribute('class', `theme--${get(theme)}`);
 		console.log(unsupported);
 		return () => {
 			clearVideo();
@@ -71,7 +71,7 @@
 	@import './App.scss';
 </style>
   
-<MaterialApp theme={theme}>
+<MaterialApp theme={$theme}>
 	<AppBar class="secondary-color theme--dark">
 		<span slot="title">
 			<Icon class="mdi mdi-camera-image" />
