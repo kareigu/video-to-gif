@@ -6,16 +6,11 @@
 	import { ffmpeg, processVideo, videoClearer, gifClearer } from './utils/ffmpeg';
 	import { toggleTheme, initTheme } from './utils/theme';
 	import isMobile from './utils/isMobile';
-	import { videoFile, gifFile } from './stores/ffmpegStore';
+	import { videoFile, gifFile, ffmpegReady, ffmpegConverting, ffmpegProgress } from './stores/ffmpegStore';
 	import type { TTheme } from './utils/theme';
 	import type { TFFMPEGStatus } from './utils/ffmpeg';
 
 
-	let ffmpegStatus: TFFMPEGStatus = {
-		ready: false,
-		progress: 0,
-		converting: false
-	}
 	let unsupported = isMobile();
 	let theme: TTheme = initTheme();
 	
@@ -30,8 +25,8 @@
 	async function loadFFMPEG() {
 		await ffmpeg.load();
 		if(ffmpeg.isLoaded()) {
-			ffmpeg.setProgress(({ratio}) => ffmpegStatus.progress = ratio * 100) ;
-			ffmpegStatus.ready = true;
+			ffmpeg.setProgress(({ratio}) => ffmpegProgress.set(ratio * 100));
+			ffmpegReady.set(true);
 		} else {
 			unsupported = true;
 		}
@@ -49,7 +44,7 @@
 
 	function handleLoadingVideo(e: Event) {
 		if(e.target) {
-			if(!ffmpegStatus.ready)
+			if(!get(ffmpegReady))
 				loadFFMPEG();
 			//@ts-expect-error
 			const target: HTMLInputElement = e.target;
@@ -59,9 +54,10 @@
 
 	async function convertToGif() {
 		if($videoFile) {
-			ffmpegStatus.converting = true;
+			ffmpegConverting.set(true);
 			gifFile.set(await processVideo(get(videoFile)));
-			ffmpegStatus = {...ffmpegStatus, converting: false, progress: 0};
+			ffmpegConverting.set(false);
+			ffmpegProgress.set(0);
 		}
 	}
 
@@ -120,7 +116,7 @@
 				<p>WebAssembly isn't supported on your browser or device</p>
 			{/if}
 
-			{#if $videoFile && ffmpegStatus.ready}
+			{#if $videoFile && $ffmpegReady}
 				<Button 
 					on:click={clearVideo} 
 					class="red"
@@ -131,7 +127,7 @@
 			{/if}
 		</div>
 
-		{#if $videoFile && ffmpegStatus.ready}
+		{#if $videoFile && $ffmpegReady}
 			<Card raised>
 				<video 
 					src={URL.createObjectURL(get(videoFile))} 
@@ -143,12 +139,12 @@
 			
 			<div class="gifStuff" in:slide out:blur>
 				<div class="gifTopControls" in:fade out:blur>
-					{#if ffmpegStatus.converting}
+					{#if $ffmpegConverting}
 						<div class="progressBar" in:fade out:blur>
 							<ProgressLinear 
 								color="blue" 
 								backgroundColor="secondary" 
-								value={ffmpegStatus.progress} 
+								value={$ffmpegProgress} 
 							/>
 						</div>
 					{/if}
