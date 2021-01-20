@@ -32,6 +32,7 @@
 			on:click={toggleTheme}
 			icon
 			class={$theme === 'dark' ? 'deep-purple yellow-text' : 'blue yellow-text'}
+			style="margin-right: 15px"
 			size="default"
 		>
 			<Icon class={$theme === 'dark' ? 'mdi mdi-moon-waxing-crescent' : 'mdi mdi-weather-sunny'} />
