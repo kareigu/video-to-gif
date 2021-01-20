@@ -6,3 +6,5 @@ import type { TTheme } from '../utils/theme';
 export const theme = writable<TTheme>(initTheme());
 
 export const unsupported = writable(isMobile());
+
+export const aboutOpen = writable(false);

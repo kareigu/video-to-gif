@@ -3,9 +3,10 @@
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 	import FFmpeg from './components/FFmpeg.svelte';
+	import About from './components/About.svelte';
 	import { clearVideo } from './utils/ffmpeg';
 	import { toggleTheme } from './utils/theme';
-	import { theme } from './stores/utilStore';
+	import { theme, aboutOpen } from './stores/utilStore';
 
 	onMount(() => {
 		document.body.setAttribute('class', `theme--${get(theme)}`);
@@ -26,17 +27,27 @@
 			Convert video to GIF
 		</span>
 		<div style="flex-grow:1" />
-		<Button 
-			on:click={toggleTheme}
-			icon
-			class={$theme === 'dark' ? 'deep-purple yellow-text' : 'blue yellow-text'}
-			style="margin-right: 15px"
-			size="default"
-		>
-			<Icon class={$theme === 'dark' ? 'mdi mdi-moon-waxing-crescent' : 'mdi mdi-weather-sunny'} />
-		</Button>
+		<div style="margin-right: 15px">
+			<Button 
+				on:click={toggleTheme}
+				icon
+				class={$theme === 'dark' ? 'deep-purple yellow-text' : 'blue yellow-text'}
+				size="default"
+			>
+				<Icon class={$theme === 'dark' ? 'mdi mdi-moon-waxing-crescent' : 'mdi mdi-weather-sunny'} />
+			</Button>
+			<Button 
+				on:click={() => aboutOpen.set(!get(aboutOpen))}
+				icon
+				class="white blue-text"
+				size="default"
+			>
+				<Icon class="mdi mdi-alert-circle-outline" />
+			</Button>
+		</div>
 	</AppBar>
 	<div class="pageContent">
+		<About />
 		<FFmpeg />
 	</div>
 </MaterialApp>
