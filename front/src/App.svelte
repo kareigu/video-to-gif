@@ -1,12 +1,11 @@
 <script lang='ts'>
-	import { MaterialApp, Button, AppBar, Card, ProgressLinear, Icon } from 'svelte-materialify';
+	import { MaterialApp, Button, AppBar, Icon } from 'svelte-materialify';
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 	import FFmpeg from './components/FFmpeg.svelte';
-	import { slide, fade, blur } from 'svelte/transition'
-	import { clearVideo, clearGif, handleLoadingVideo, convertToGif } from './utils/ffmpeg';
+	import { clearVideo } from './utils/ffmpeg';
 	import { toggleTheme } from './utils/theme';
-	import { theme, unsupported } from './stores/utilStore';
+	import { theme } from './stores/utilStore';
 
 	onMount(() => {
 		document.body.setAttribute('class', `theme--${get(theme)}`);

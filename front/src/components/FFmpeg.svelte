@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { MaterialApp, Button, AppBar, Card, ProgressLinear, Icon } from 'svelte-materialify';
+  import { Button, Card, ProgressLinear, Icon } from 'svelte-materialify';
   import { onMount } from 'svelte';
   import { get } from 'svelte/store';
   import { slide, fade, blur } from 'svelte/transition'
