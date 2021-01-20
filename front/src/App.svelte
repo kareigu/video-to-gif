@@ -7,12 +7,9 @@
 	import { toggleTheme, initTheme } from './utils/theme';
 	import isMobile from './utils/isMobile';
 	import { videoFile, gifFile, ffmpegReady, ffmpegConverting, ffmpegProgress } from './stores/ffmpegStore';
-	import { theme } from './stores/utilStore';
+	import { theme, unsupported } from './stores/utilStore';
 	import type { TTheme } from './utils/theme';
 	import type { TFFMPEGStatus } from './utils/ffmpeg';
-
-
-	let unsupported = isMobile();
 
 	$: maxWindowWidth = window.innerWidth < 640 ? window.innerWidth : 640;
 
@@ -23,7 +20,7 @@
 			ffmpeg.setProgress(({ratio}) => ffmpegProgress.set(ratio * 100));
 			ffmpegReady.set(true);
 		} else {
-			unsupported = true;
+			unsupported.set(true);
 		}
 	}
 
@@ -107,7 +104,7 @@
 				Open video
 			</Button>
 			
-			{#if unsupported}
+			{#if $unsupported}
 				<p>WebAssembly isn't supported on your browser or device</p>
 			{/if}
 
