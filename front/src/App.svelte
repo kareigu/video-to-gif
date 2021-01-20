@@ -6,12 +6,11 @@
 	import { ffmpeg, processVideo, videoClearer, gifClearer } from './utils/ffmpeg';
 	import { toggleTheme, initTheme } from './utils/theme';
 	import isMobile from './utils/isMobile';
-	import { videoFile } from './stores/ffmpegStore';
+	import { videoFile, gifFile } from './stores/ffmpegStore';
 	import type { TTheme } from './utils/theme';
 	import type { TFFMPEGStatus } from './utils/ffmpeg';
 
 
-	let gifFile: string = '';
 	let ffmpegStatus: TFFMPEGStatus = {
 		ready: false,
 		progress: 0,
@@ -61,18 +60,18 @@
 	async function convertToGif() {
 		if($videoFile) {
 			ffmpegStatus.converting = true;
-			gifFile = await processVideo(get(videoFile));
+			gifFile.set(await processVideo(get(videoFile)));
 			ffmpegStatus = {...ffmpegStatus, converting: false, progress: 0};
 		}
 	}
 
 	function clearGif() {
-		gifFile = gifClearer();
+		gifFile.set(gifClearer());
 	}
 
 	function clearVideo() {
 		videoFile.set(null);
-		gifFile = videoClearer(gifFile);
+		gifFile.set(videoClearer(get(gifFile)));
 	}
 
 </script>
@@ -155,12 +154,12 @@
 					{/if}
 					<Button 
 						on:click={convertToGif}
-						disabled={gifFile === '' ? false : true}
+						disabled={$gifFile === '' ? false : true}
 					>
 						<Icon class="mdi mdi-file-restore" />
 						Convert to GIF
 					</Button>
-					{#if gifFile !== ''}
+					{#if $gifFile !== ''}
 						<Button 
 							on:click={clearGif} 
 							class="red"
@@ -170,10 +169,10 @@
 						</Button>
 					{/if}
 				</div>
-				{#if gifFile !== ''}
+				{#if $gifFile !== ''}
 					<Card raised>
 						<img 
-							src={gifFile} 
+							src={$gifFile} 
 							alt="converted gif" 
 							in:fade out:blur 
 							width={maxWindowWidth}
