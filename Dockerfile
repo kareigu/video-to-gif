@@ -17,7 +17,7 @@ COPY ./src ./src
 RUN cargo build --release
 
 
-FROM node as svelte_builder
+FROM node:14 as svelte_builder
 
 WORKDIR /usr/src/
 
