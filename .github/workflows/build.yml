@@ -19,4 +19,4 @@ jobs:
           mkdir certs
 
       - name: Build image
-        run: build.sh
+        run: ./build.sh
