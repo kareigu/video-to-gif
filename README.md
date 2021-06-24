@@ -1,4 +1,6 @@
 # Convert videos to GIFs
+![Build](https://github.com/mxrr/video-to-gif/actions/workflows/build.yml/badge.svg)
+![Deploy](https://github.com/mxrr/video-to-gif/actions/workflows/deploy.yml/badge.svg)
 ## [Live demo](https://gif.mxrr.dev/)
 ### Svelte application for converting videofiles to gifs by using the WASM port of ffmpeg
 
