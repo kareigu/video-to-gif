@@ -4,4 +4,7 @@ services:
     container_name: video-to-gif
     restart: unless-stopped
     ports:
-      - 10.20.30.22:4340:4340
+      - 4340:4340
+    volumes:
+      - ./certs:/usr/src/video-to-gif/certs
+      - ./config.toml:/usr/src/video-to-gif/config.toml

@@ -26,17 +26,14 @@ COPY ./front ./
 RUN yarn \
 		&& yarn build
 		
-FROM debian:buster-slim
+FROM debian:bookworm-slim
 
 WORKDIR /usr/src/video-to-gif
 
 RUN apt-get update \
-		&& apt-get install libssl1.1
+		&& apt-get install libssl3
 
 COPY --from=rust_builder /usr/src/video-to-gif/target/release/video-to-gif ./video-to-gif
 COPY --from=svelte_builder /usr/src/build ./front/build
-
-COPY ./certs ./certs
-COPY ./config.toml ./config.toml
 
 CMD ./video-to-gif
